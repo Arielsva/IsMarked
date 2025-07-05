@@ -4,7 +4,7 @@ from django.db import models
 
 class Appointment(models.Model):
     provider = models.ForeignKey("auth.User", related_name="appointmets", on_delete=models.CASCADE)
-    date_hour = models.DateTimeField()
+    date_time = models.DateTimeField()
     customer_name = models.CharField(max_length=200)
     customer_email = models.EmailField()
     customer_phone = models.CharField(max_length=20)
