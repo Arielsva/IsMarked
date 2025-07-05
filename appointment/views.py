@@ -38,3 +38,17 @@ def appointment_detail(request, pk):
     if request.method == "DELETE":
         object.delete()
         return Response(status=204)
+    
+@api_view(http_method_names=["GET", "POST"])
+def appointment_list(request):
+    if request.method == "GET":
+        query = Appointment.objects.all()
+        serializer = AppointmentSerializer(query, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    if request.method == "POST":
+        data = request.data
+        serializer = AppointmentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
