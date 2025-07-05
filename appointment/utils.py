@@ -11,7 +11,7 @@ def get_available_times(date: date) -> Iterable[datetime]:
     available_times = set()
 
     while start < end:
-        if not Appointment.objects.filter(date_hour=start).exists():
+        if not Appointment.objects.filter(date_time=start).exists():
             available_times.add(start)
         start += delta
 
