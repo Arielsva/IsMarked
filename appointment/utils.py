@@ -5,7 +5,7 @@ from appointment.models import Appointment
 
 def get_available_times(date: date) -> Iterable[datetime]:
     start = datetime(year=date.year, month=date.month, day=date.day, hour=9, minute=0, tzinfo=timezone.utc)
-    end = datetime(year=date.year, month=date.month, day=date.day, hour=17, minute=30, tzinfo=timezone.utc)
+    end = datetime(year=date.year, month=date.month, day=date.day, hour=18, minute=0, tzinfo=timezone.utc)
     delta = timedelta(minutes=30)
 
     available_times = set()
