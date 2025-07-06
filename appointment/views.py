@@ -52,3 +52,10 @@ def appointment_list(request):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+    
+@api_view(http_method_names=["POST"])
+def appointment_cancel(request, pk):
+    object = get_object_or_404(Appointment, id=pk)
+    object.active = False
+    object.save()
+    return Response(status=200)
