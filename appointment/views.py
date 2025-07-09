@@ -25,24 +25,26 @@ def get_times(request):
 
     return JsonResponse(available_times, safe=False)
 
-class AppointmentDetail(APIView):
-    def get(self, request, pk):
-        object = get_object_or_404(Appointment, id=pk)
-        serializer = AppointmentSerializer(object)
-        return JsonResponse(serializer.data)
+class AppointmentDetail(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView
+):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
     
-    def patch(self, request, pk):
-        object = get_object_or_404(Appointment, id=pk)
-        serializer = AppointmentSerializer(object, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=200)
-        return JsonResponse(serializer.errors, status=400)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
     
-    def delete(self, request, pk):
-        object = get_object_or_404(Appointment, id=pk)
-        object.delete()
-        return Response(status=204)
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+    
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
     
 class AppointmentList(
     mixins.ListModelMixin,
