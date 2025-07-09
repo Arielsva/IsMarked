@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import mixins, generics
 
 from datetime import datetime
 
@@ -43,19 +44,19 @@ class AppointmentDetail(APIView):
         object.delete()
         return Response(status=204)
     
-class AppointmentList(APIView):
-    def get(self, request):
-        query = Appointment.objects.all()
-        serializer = AppointmentSerializer(query, many=True)
-        return JsonResponse(serializer.data, safe=False)
+class AppointmentList(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView
+):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
     
-    def post(self, request):
-        data = request.data
-        serializer = AppointmentSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
     
 @api_view(http_method_names=["POST"])
 def appointment_cancel(request, pk):
