@@ -24,19 +24,22 @@ def get_times(request):
 
     return JsonResponse(available_times, safe=False)
 
-@api_view(http_method_names=["GET", "PATCH", "DELETE"])
-def appointment_detail(request, pk):
-    object = get_object_or_404(Appointment, id=pk)
-    if request.method == "GET":
+class AppointmentDetail(APIView):
+    def get(self, request, pk):
+        object = get_object_or_404(Appointment, id=pk)
         serializer = AppointmentSerializer(object)
         return JsonResponse(serializer.data)
-    if request.method == "PATCH":
+    
+    def patch(self, request, pk):
+        object = get_object_or_404(Appointment, id=pk)
         serializer = AppointmentSerializer(object, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=200)
         return JsonResponse(serializer.errors, status=400)
-    if request.method == "DELETE":
+    
+    def delete(self, request, pk):
+        object = get_object_or_404(Appointment, id=pk)
         object.delete()
         return Response(status=204)
     
