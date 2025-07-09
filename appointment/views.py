@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from datetime import datetime
 
@@ -39,13 +40,13 @@ def appointment_detail(request, pk):
         object.delete()
         return Response(status=204)
     
-@api_view(http_method_names=["GET", "POST"])
-def appointment_list(request):
-    if request.method == "GET":
+class AppointmentList(APIView):
+    def get(self, request):
         query = Appointment.objects.all()
         serializer = AppointmentSerializer(query, many=True)
         return JsonResponse(serializer.data, safe=False)
-    if request.method == "POST":
+    
+    def post(self, request):
         data = request.data
         serializer = AppointmentSerializer(data=data)
         if serializer.is_valid():
