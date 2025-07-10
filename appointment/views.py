@@ -46,13 +46,18 @@ class AppointmentDetail(
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
     
+    
 class AppointmentList(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     generics.GenericAPIView
 ):
-    queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
+
+    def get_queryset(self):
+        provider = self.request.query_params.get("provider", None)
+        queryset = Appointment.objects.filter(provider__username=provider)
+        return queryset
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
