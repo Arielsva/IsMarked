@@ -27,3 +27,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
         if value not in get_available_times(value.date()):
             raise serializers.ValidationError("schedule not available")
         return value
+    
+
+class ProviderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "appointmets"]
+
+    appointmets = AppointmentSerializer(many=True, read_only=True)
