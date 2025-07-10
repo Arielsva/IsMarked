@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import mixins, generics, permissions
+from rest_framework import generics, permissions
 
 from datetime import datetime
 
@@ -44,34 +44,13 @@ def get_times(request):
     return JsonResponse(available_times, safe=False)
 
 
-class AppointmentDetail(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView
-):
+class AppointmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
     permission_classes = [IsProvider]
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-    
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-    
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-    
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
     
     
-class AppointmentList(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView
-):
+class AppointmentList(generics.ListCreateAPIView):
     serializer_class = AppointmentSerializer
     permission_classes = [IsProviderOrCreateOnly]
 
@@ -79,12 +58,6 @@ class AppointmentList(
         provider = self.request.query_params.get("provider", None)
         queryset = Appointment.objects.filter(provider__username=provider)
         return queryset
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
     
 
 @api_view(http_method_names=["POST"])
