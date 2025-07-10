@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -7,7 +8,7 @@ from rest_framework import mixins, generics, permissions
 from datetime import datetime
 
 from appointment.utils import get_available_times
-from appointment.serializers import AppointmentSerializer
+from appointment.serializers import AppointmentSerializer, ProviderSerializer
 from appointment.models import Appointment
 
 
@@ -92,3 +93,9 @@ def appointment_cancel(request, pk):
     object.active = False
     object.save()
     return Response(status=200)
+
+
+class ProviderList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = ProviderSerializer
+    permission_classes = [permissions.IsAdminUser]
