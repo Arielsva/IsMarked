@@ -96,3 +96,17 @@ class TestAppointmentCreation(APITestCase):
 
         response = self.client.post("/api/appointment/", appointment_request_data, format="json")
         self.assertEqual(response.status_code, 400)
+
+
+class TestGetTimes(APITestCase):
+    def test_get_available_times_normal_day(self):
+        response = self.client.get("/api/times/?date=2025-12-01")
+        data = json.loads(response.content)
+        self.assertNotEqual(data, [])
+        self.assertEqual(datetime.fromisoformat(data[0]), datetime(2025, 12, 1, hour=9, minute=0, second=0, tzinfo=timezone.utc))
+        self.assertEqual(datetime.fromisoformat(data[-1]), datetime(2025, 12, 1, hour=17, minute=30, second=0, tzinfo=timezone.utc))
+
+    def test_get_available_times_holiday_day_returns_empty_list(self):
+        response = self.client.get("/api/times/?date=2025-01-01")
+        data = json.loads(response.content)
+        self.assertEqual(data, [])
