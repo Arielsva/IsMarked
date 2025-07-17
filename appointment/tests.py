@@ -1,6 +1,7 @@
 import json
 from datetime import date, datetime, timezone
 
+from unittest import mock
 from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
@@ -99,14 +100,16 @@ class TestAppointmentCreation(APITestCase):
 
 
 class TestGetTimes(APITestCase):
-    def test_get_available_times_normal_day(self):
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
+    def test_get_available_times_normal_day(self, _):
         response = self.client.get("/api/times/?date=2025-12-01")
         data = json.loads(response.content)
         self.assertNotEqual(data, [])
         self.assertEqual(datetime.fromisoformat(data[0]), datetime(2025, 12, 1, hour=9, minute=0, second=0, tzinfo=timezone.utc))
         self.assertEqual(datetime.fromisoformat(data[-1]), datetime(2025, 12, 1, hour=17, minute=30, second=0, tzinfo=timezone.utc))
 
-    def test_get_available_times_holiday_day_returns_empty_list(self):
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=True)
+    def test_get_available_times_holiday_day_returns_empty_list(self, _):
         response = self.client.get("/api/times/?date=2025-01-01")
         data = json.loads(response.content)
         self.assertEqual(data, [])
