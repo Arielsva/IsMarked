@@ -11,6 +11,7 @@ from datetime import datetime
 from appointment.utils import get_available_times
 from appointment.serializers import AppointmentSerializer, ProviderSerializer
 from appointment.models import Appointment
+from appointment.tasks import generate_providers_report
 
 
 class IsProviderOrCreateOnly(permissions.BasePermission):
@@ -75,3 +76,10 @@ class ProviderList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = ProviderSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    def list(self, request, *args, **kwargs):
+        format = request.query_params.get("output")
+        if format == "csv":
+            response = generate_providers_report.delay([request.user.email])
+            return Response({"task_id": response.task_id})
+        return super().list(request, *args, **kwargs)
