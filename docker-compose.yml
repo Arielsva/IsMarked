@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - 8000:8000
+    volumes:
+      - drf-db:/app
+      - ./appointment:/app/appointment
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - ./.docker.env
+  redis:
+    image: redis
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
+  celery:
+    build:
+      context:  .
+    command: celery -A drf worker -P solo -Q celery --loglevel=INFO
+    env_file:
+      - ./.docker.env
+    depends_on:
+      - app
+      - redis
+volumes:
+  drf-db:
