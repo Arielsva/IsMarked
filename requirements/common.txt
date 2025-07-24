@@ -23,3 +23,8 @@ redis==5.2.1
 six==1.17.0
 vine==5.1.0
 wcwidth==0.2.13
+drf-yasg==1.21.10
+inflection==0.5.1
+pytz==2025.2
+PyYAML==6.0.2
+uritemplate==4.2.0
