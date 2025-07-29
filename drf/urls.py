@@ -8,8 +8,8 @@ from rest_framework import permissions
 schema_view = get_schema_view(
     openapi.Info(
         title="IsMarked API",
-        default_version="v0.1.0",
-        description="Is MArked API documentation",
+        default_version="v0.1.1",
+        description="Is Marked API documentation",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="arielsvadev@gmail.com"),
         license=openapi.License(name="MIT License"),

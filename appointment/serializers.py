@@ -3,7 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from appointment.models import Appointment
-from appointment.utils import get_available_times
+from appointment.utils import get_available_times_by_provider
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -13,6 +13,12 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     provider = serializers.CharField()
 
+    def validate(self, data):
+        if data['date_time'] not in get_available_times_by_provider(data['provider'], data['date_time'].date()):
+            raise serializers.ValidationError({'date_time': 'schedule not available'})
+        return data
+
+
     def validate_provider(self, value):
         try:
             provider_object = User.objects.get(username=value)
@@ -20,12 +26,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("provider not found")
         return provider_object
     
-    # TODO: Ajustar validação para filtrar horários por provider
     def validate_date_time(self, value):
         if value < timezone.now():
-            raise serializers.ValidationError("appointment cannot be done in the past")
-        if value not in get_available_times(value.date()):
-            raise serializers.ValidationError("schedule not available")
+            raise serializers.ValidationError("appointment cannot be done in the past")      
         return value
     
 

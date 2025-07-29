@@ -1,4 +1,4 @@
-# Is Marked (v0.1.0)
+# Is Marked (v0.1.1)
 IsMarked is an API developed for scheduling and managing appointments.
 
 It was created to provide a back-end that front-end developers can use to easily create web apps.
@@ -39,7 +39,7 @@ To run the project, use the following command: (some API features will be unavai
 ```
 To run the project with all features, use docker-compose:
 ```bash
- docker-compose up
+ docker compose up
 ```
 
 With the project running, access http://127.0.0.1:8000/doc/ in your browser to see the API documentation
