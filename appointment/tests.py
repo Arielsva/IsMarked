@@ -87,6 +87,59 @@ class TestAppointmentCreation(APITestCase):
         response = self.client.post("/api/appointment/", appointment_request_data, format="json")
         self.assertEqual(response.status_code, 400)
 
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
+    def test_create_appointment_at_scheduled_time_returns_400(self, _):
+        User.objects.create(email="test@email.com", username="test", password="test")
+
+        appointment_request_data_1 = {
+            "provider": "test",
+            "date_time": "2026-07-28T09:00:00Z",
+            "customer_name": "Test",
+            "customer_email": "test@email.com",
+            "customer_phone": "+550090000-0000"
+        }
+
+        response_1 = self.client.post("/api/appointment/", appointment_request_data_1, format="json")
+        self.assertEqual(response_1.status_code, 201)
+
+        appointment_request_data_2 = {
+            "provider": "test",
+            "date_time": "2026-07-28T09:00:00Z",
+            "customer_name": "Test",
+            "customer_email": "test@email.com",
+            "customer_phone": "+550090000-0000"
+        }
+
+        response_2 = self.client.post("/api/appointment/", appointment_request_data_2, format="json")
+        self.assertEqual(response_2.status_code, 400)
+        
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)    
+    def test_create_appointment_at_scheduled_time_for_another_provider_returns_200(self, _):
+        User.objects.create(email="test@email.com", username="test", password="test")
+        User.objects.create(email="admin@email.com", username="admin", password="admin")
+
+        appointment_request_data_test = {
+            "provider": "test",
+            "date_time": "2026-07-28T09:00:00Z",
+            "customer_name": "Test",
+            "customer_email": "test@email.com",
+            "customer_phone": "+550090000-0000"
+        }
+
+        response_test = self.client.post("/api/appointment/", appointment_request_data_test, format="json")
+        self.assertEqual(response_test.status_code, 201)
+
+        appointment_request_data_admin = {
+            "provider": "admin",
+            "date_time": "2026-07-28T09:00:00Z",
+            "customer_name": "Admin",
+            "customer_email": "admin@email.com",
+            "customer_phone": "+550090000-0000"
+        }
+
+        response_admin = self.client.post("/api/appointment/", appointment_request_data_admin, format="json")
+        self.assertEqual(response_admin.status_code, 201)
+
 
 class TestGetTimes(APITestCase):
     @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
