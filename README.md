@@ -1,4 +1,4 @@
-# Is Marked (v0.1.0)
+# Is Marked (v0.1.1)
 IsMarked is an API developed for scheduling and managing appointments.
 
 It was created to provide a back-end that front-end developers can use to easily create web apps.
