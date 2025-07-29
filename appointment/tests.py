@@ -25,6 +25,7 @@ class TestAppointmentListing(APITestCase):
 
 
 class TestAppointmentCreation(APITestCase):
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
     def test_create_appointment(self):
         User.objects.create(email="test@email.com", username="test", password="test")
 
@@ -47,6 +48,7 @@ class TestAppointmentCreation(APITestCase):
         self.assertEqual(created_appointment.customer_email, "test@email.com")
         self.assertEqual(created_appointment.customer_phone, "+550090000-0000")
 
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
     def test_create_appointment_with_invalid_provider_returns_400(self):
         appointment_request_data = {
             "provider": "test",
@@ -59,6 +61,7 @@ class TestAppointmentCreation(APITestCase):
         response = self.client.post("/api/appointment/", appointment_request_data, format="json")
         self.assertEqual(response.status_code, 400)
 
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
     def test_create_appointment_in_past_returns_400(self):
         User.objects.create(email="test@email.com", username="test", password="test")
 
@@ -73,6 +76,7 @@ class TestAppointmentCreation(APITestCase):
         response = self.client.post("/api/appointment/", appointment_request_data, format="json")
         self.assertEqual(response.status_code, 400)
 
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
     def test_create_appointment_in_invalid_time_returns_400(self):
         User.objects.create(email="test@email.com", username="test", password="test")
 
@@ -168,6 +172,7 @@ class TestProviderListing(APITestCase):
         response = self.client.get("/api/provider/")
         self.assertEqual(response.status_code, 403)
 
+    @mock.patch("appointment.libs.brasil_api.is_holiday", return_value=False)
     def test_admin_listing_providers_returns_list(self):
         User.objects.create(email="test@email.com", username="test", password="test")
         user = User.objects.create(email="admin@email.com", username="admin", password="admin", is_staff=True)
